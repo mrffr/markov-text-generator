@@ -20,7 +20,7 @@ class MarkovText():
 
     def gen_ngrams(self, words, depth):
         if len(words) <= depth:
-            print("Not enough words for depth", depth)
+            print("Not enough words in input for depth", depth)
             sys.exit(-1)
 
         # generator for list of words in chunks of depth length
@@ -28,6 +28,10 @@ class MarkovText():
             yield [words[i+j] for j in range(depth + 1)]
 
     def gen_chain(self, text, depth):
+        if depth <= 0:
+            print("Depth must be 1 or greater.")
+            sys.exit(-1)
+
         words = text.split()
         for word_l in self.gen_ngrams(words, depth):
             # key is everything but last word
@@ -40,20 +44,25 @@ class MarkovText():
             else:
                 self.chain[key] = [last_word]
 
-    def gen_text(self, text_len, start_word=''):
-        '''Generate text of text_len with optional start_word.'''
-        wordtuple = random.choice(list(self.chain))
-        if start_word != '':
-            wordtuple = start_word
-        text = ' '.join([str(w) for w in wordtuple])
+    def gen_text(self, text_len):
+        '''Generate text of text_len'''
 
-        for i in range(text_len):
+        if text_len == 0:
+            return ''
+
+        # first choice is either random starting chunk
+        words_chunk = random.choice(list(self.chain))
+        text = ' '.join([str(w) for w in words_chunk])
+
+        for i in range(text_len - 1):
             try:
-                word2 = random.choice(list(self.chain[wordtuple]))
-                # next tuple is created from last tuple and next word
+                # choose from list of words that follow current chunk
+                next_word = random.choice(list(self.chain[words_chunk]))
+
+                # next tuple is created from last chunk and next word
                 # this is then the key for the next lookup
-                wordtuple = tuple([w for w in wordtuple][1:] + [word2])
-                text += ' ' + str(word2)
+                words_chunk = tuple(list(words_chunk[1:]) + [next_word])
+                text += ' ' + str(next_word)
             except Exception:
                 break
 
