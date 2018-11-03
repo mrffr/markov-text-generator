@@ -16,24 +16,24 @@ class MarkovText():
     '''Generate markov chain and then produce text from it.'''
     def __init__(self, depth, text):
         self.chain = {}
-        self.gen_chain(text, depth)
+        self.create_chain(text, depth)
 
-    def gen_ngrams(self, words, depth):
+    def create_ngrams(self, words, depth):
         if len(words) <= depth:
             print("Not enough words in input for depth", depth)
             sys.exit(-1)
 
-        # generator for list of words in chunks of depth length
+        # generator for list of word chunks of length depth
         for i in range(len(words) - depth):
             yield [words[i+j] for j in range(depth + 1)]
 
-    def gen_chain(self, text, depth):
+    def create_chain(self, text, depth):
         if depth <= 0:
             print("Depth must be 1 or greater.")
             sys.exit(-1)
 
         words = text.split()
-        for word_l in self.gen_ngrams(words, depth):
+        for word_l in self.create_ngrams(words, depth):
             # key is everything but last word
             # value is last word
             key = tuple(word_l[:-1])
@@ -45,8 +45,6 @@ class MarkovText():
                 self.chain[key] = [last_word]
 
     def gen_text(self, text_len):
-        '''Generate text of text_len'''
-
         if text_len == 0:
             return ''
 
@@ -80,7 +78,7 @@ def main():
                         default='-')
     parser.add_argument('--len',
                         type=int,
-                        help='Length of text to generate.',
+                        help='Maximum length of text to generate.',
                         default=100)
     parser.add_argument('--depth',
                         type=int,
