@@ -16,29 +16,34 @@ class MarkovText():
     '''Generate markov chain and then produce text from it.'''
     def __init__(self, depth, text):
         self.chain = {}
-        self.depth = depth
-        self.gen_chain(text)
+        self.gen_chain(text, depth)
 
-    def gen_ngrams(self, words):
-        if len(words) < self.depth:
-            print("not enough words for {0} depth".format(self.depth))
+    def gen_ngrams(self, words, depth):
+        if len(words) <= depth:
+            print("Not enough words for depth", depth)
             sys.exit(-1)
-        for i in range(len(words) - (self.depth - 1)):
-            yield [words[i+j] for j in range(self.depth)]
 
-    def gen_chain(self, text):
-        words = [word for word in text]
-        for word_l in self.gen_ngrams(words):
+        # generator for list of words in chunks of depth length
+        for i in range(len(words) - depth):
+            yield [words[i+j] for j in range(depth + 1)]
+
+    def gen_chain(self, text, depth):
+        words = text.split()
+        for word_l in self.gen_ngrams(words, depth):
+            # key is everything but last word
+            # value is last word
             key = tuple(word_l[:-1])
+            last_word = word_l[-1]
             if key in self.chain:
-                self.chain[key].append(word_l[-1])
+                self.chain[key].append(last_word)
             else:
-                self.chain[key] = [word_l[-1]]
+                self.chain[key] = [last_word]
 
-    def gen_text(self, text_len):
-        text = ""
+    def gen_text(self, text_len, start_word=''):
         wordtuple = random.choice(list(self.chain))
-        text += ' '.join([str(w) for w in wordtuple])
+        if start_word != '':
+            wordtuple = start_word
+        text = ' '.join([str(w) for w in wordtuple])
         for i in range(text_len):
             try:
                 word2 = random.choice(list(self.chain[wordtuple]))
@@ -46,7 +51,7 @@ class MarkovText():
                 text += ' ' + str(word2)
             except Exception:
                 break
-        return text
+        return text.lstrip()
 
 
 def main():
@@ -68,7 +73,7 @@ def main():
                         default=1)
     args = parser.parse_args()
 
-    chain = MarkovText(args.depth, args.input)
+    chain = MarkovText(args.depth, args.input.read())
     print(chain.gen_text(args.len))
     return
 
