@@ -12,17 +12,6 @@ class TestMarkovText(unittest.TestCase):
         exc = cm.exception
         self.assertEqual(exc.code, -1)
 
-    def test_depth_arg(self):
-        with self.assertRaises(SystemExit) as cm:
-            markov_text_gen.MarkovText(0, 'cat dog cat rat log')
-        exc = cm.exception
-        self.assertEqual(exc.code, -1)
-
-        with self.assertRaises(SystemExit) as cm:
-            markov_text_gen.MarkovText(-1, 'cat dog cat rat log')
-        exc = cm.exception
-        self.assertEqual(exc.code, -1)
-
     def test_basic(self):
         mc = markov_text_gen.MarkovText(1, 'cat dog')
         self.assertEqual(len(mc.chain), 1)
