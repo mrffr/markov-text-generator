@@ -28,10 +28,6 @@ class MarkovText():
             yield [words[i+j] for j in range(depth + 1)]
 
     def create_chain(self, text, depth):
-        if depth <= 0:
-            print("Depth must be 1 or greater.")
-            sys.exit(-1)
-
         words = text.split()
         for word_l in self.create_ngrams(words, depth):
             # key is everything but last word
@@ -85,6 +81,13 @@ def main():
                         help='Number of words to consider as one chunk.',
                         default=1)
     args = parser.parse_args()
+
+    if args.depth <= 0:
+        print("Depth must be 1 or greater.")
+        sys.exit(-1)
+    if args.len <= 0:
+        print("Length must be 1 or greater.")
+        sys.exit(-1)
 
     chain = MarkovText(args.depth, args.input.read())
     print(chain.gen_text(args.len))
