@@ -44,9 +44,9 @@ class MarkovText():
         if text_len == 0:
             return ''
 
-        # first choice is either random starting chunk
+        # first choice is a random starting chunk
         words_chunk = random.choice(list(self.chain))
-        text = ' '.join([str(w) for w in words_chunk])
+        text = ' '.join(map(str, words_chunk))
 
         for i in range(text_len - 1):
             try:
