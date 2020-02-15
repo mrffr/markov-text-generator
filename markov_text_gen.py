@@ -72,19 +72,24 @@ def main():
                         help='Input file to read.',
                         type=argparse.FileType('r'),
                         default='-')
+
     parser.add_argument('--len',
                         type=int,
                         help='Maximum length of text to generate.',
                         default=100)
+
     parser.add_argument('--depth',
                         type=int,
                         help='Number of words to consider as one chunk.',
                         default=1)
+
     args = parser.parse_args()
 
+    # check arguments
     if args.depth <= 0:
         print("Depth must be 1 or greater.")
         sys.exit(-1)
+
     if args.len <= 0:
         print("Length must be 1 or greater.")
         sys.exit(-1)
